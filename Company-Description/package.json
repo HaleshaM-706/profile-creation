@@ -1,0 +1,53 @@
+{
+  "name": "ReactNativeTemplate",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --assets-dest ./android/app/src/main/res/;",
+    "rn-build-debug": "cd android && ./gradlew clean && ./gradlew assembleDebug;cd .. ;",
+    "release": "cd ./android && ./gradlew clean && ./gradlew app:assembleRelease -x bundleReleaseJsAndAssets ",
+    "bundleRelease": "cd ./android && ./gradlew clean && ./gradlew bundleRelease -x bundleReleaseJsAndAssets "
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-navigation/material-top-tabs": "^5.3.15",
+    "@react-navigation/native": "^5.9.4",
+    "compress-base64": "^1.0.2",
+    "moment": "^2.29.1",
+    "react": "16.11.0",
+    "react-native": "0.62.3",
+    "react-native-elements": "^3.4.2",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-image-picker": "1.1.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.4",
+    "react-native-navigation": "^7.17.1",
+    "react-native-paper": "^4.9.2",
+    "react-native-reanimated": "^2.2.0",
+    "react-native-safe-area-context": "^3.2.0",
+    "react-native-screens": "^3.4.0",
+    "react-native-simple-dialogs": "^1.4.0",
+    "react-native-simple-toast": "^1.1.3",
+    "react-native-tab-view": "^2.16.0",
+    "react-native-toggle-calendar": "^1.0.3",
+    "react-native-vector-icons": "^8.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
+    "@react-native-community/eslint-config": "^0.0.5",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.5.1",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.58.0",
+    "react-test-renderer": "16.11.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
