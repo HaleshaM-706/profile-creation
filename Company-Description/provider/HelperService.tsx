@@ -31,6 +31,27 @@ HelperService.post = function (url, body) {
   })
 }
 
+HelperService.get = function (url) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let response = await fetch(
+        API_URL + url,
+        {
+          method: 'GET',
+        }
+      );
+      console.log('response',response);
+      
+      let json = await response.text();
+      // console.log('result =======================>', json)
+      resolve(json)
+    } catch (error) {
+      console.error(error);
+      reject(error)
+    }
+  })
+}
+
 HelperService.update = function (url, body, id) {
   return new Promise(async (resolve, reject) => {
     console.log("===========>", url, body, id);

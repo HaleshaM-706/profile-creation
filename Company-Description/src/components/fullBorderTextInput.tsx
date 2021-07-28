@@ -27,8 +27,6 @@ export default ({
           padding: 6,
           minHeight: 40
         }}
-        autoCapitalize='none'
-        
       />
     </View>
   );

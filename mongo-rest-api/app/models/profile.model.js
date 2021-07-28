@@ -3,10 +3,9 @@ module.exports = mongoose => {
     {
       title: String,
       description: String,
-      employeeCount: Number,
-      establishYear: String,
-      founder: String,
-      headQuater: String,
+      appVersion: String,
+      author: String,
+      link: String,
       logo:String
     },
     { timestamps: true }

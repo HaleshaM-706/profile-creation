@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
-import { AppState, StyleSheet, Text, View, Image } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { useEffect } from 'react';
 import Helper from './provider/Helper';
-
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
 function Intializing(props) {
-  const [loadingText, setLoadingText] = useState('Loading');
-  const [appState, setAppState] = useState(AppState.currentState);
-
-
   async function init() {
     try {
-      Helper.navigateToDashboard(props,'Dashboard');
+      Helper.navigateToDashboard(props, 'Dashboard');
     } catch (err) {
       Helper.setRoot('HomePage');
       console.log('err', err);
@@ -26,10 +22,7 @@ function Intializing(props) {
   }, []);
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require('./src/assets/image/hardwood-tree.jpg')}
-      />
+      <ActivityIndicator size="large" animating={true} color={Colors.red800} />
       <Text>Welcome to Task 2</Text>
     </View>
   );
@@ -52,7 +45,7 @@ const styles = StyleSheet.create({
     height: 200,
     margin: 20,
     alignContent: 'center',
-    borderRadius:100
+    borderRadius: 100
   },
 });
 export default Intializing;

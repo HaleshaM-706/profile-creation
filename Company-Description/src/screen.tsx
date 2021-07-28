@@ -7,16 +7,12 @@ export function registerScreens() {
     withPaperProvider(require("../intialization").default)
   );
 
-  Navigation.registerComponent("CustomDrawer", () =>
-    withPaperProvider(require("./components/drawer/CustomDrawer").default)
-  );
-
   Navigation.registerComponent("Dashboard", () =>
     withPaperProvider(require("./pages/dashboard").default)
   );
 
   Navigation.registerComponent("Profile", () =>
-    withPaperProvider(require("./pages/profileScreen").default)
+    withPaperProvider(require("./pages/appScreen").default)
   );
 }
 

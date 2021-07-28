@@ -36,12 +36,12 @@ Helper.navigateToDashboard = async function(
     root: {
       id: "rootId",
       sideMenu: {
-        left: {
-          component: {
-            name: "CustomDrawer",
-            passProps: props || {},
-          },
-        },
+        // left: {
+        //   component: {
+        //     name: "CustomDrawer",
+        //     passProps: props || {},
+        //   },
+        // },
         center: {
           stack: {
             id: "DashBoardId",
@@ -104,11 +104,11 @@ Helper.pushToEventDetails = function(
   });
 };
 
-Helper.viewProfile=(props)=> {
+Helper.viewProfile=(props,data?:any)=> {
   Navigation.push(props.componentId, {
     component: {
       name: 'Profile',
-      passProps: props || {},
+      passProps: data || {},
       options: {
         topBar: {
           visible: false,
@@ -122,16 +122,5 @@ Helper.viewProfile=(props)=> {
   });
 }
 
-Helper.openSidemenu = function(componentId: any, props?: any) {
-  Navigation.mergeOptions(componentId, {
-    sideMenu: {
-      left: {
-        visible: true,
-      },
-    },
-    passProps: {
-      props: props,
-    },
-  });
-};
+
 

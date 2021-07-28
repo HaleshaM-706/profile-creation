@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Appbar, Avatar, Button } from "react-native-paper";
+import { View, Text, StyleSheet, FlatList, Linking } from "react-native";
+import { ActivityIndicator, Appbar, Avatar, Button, Colors, Headline, List } from "react-native-paper";
+import { Item } from "react-native-paper/lib/typescript/components/List/List";
 import Helper from '../../provider/Helper'
-import { Badge, Icon } from 'react-native-elements';
 import HelperService from '../../provider/HelperService';
 
 export default class Dashboard extends Component<any> {
@@ -12,25 +12,23 @@ export default class Dashboard extends Component<any> {
   }
 
   state = {
-    comapany: {
-      title: '',
-      description: '',
-      employeeCount: '',
-      establishYear: '',
-      founder: '',
-      headQuater: '',
-      logo: 'hh',
-      id: 0
-    }
+    comapany: [],
+    isLoading: true
   }
 
   async componentDidMount() {
-    let asyncValues: any = await HelperService.getCurrentCompany();
-    if (asyncValues && asyncValues.id) {
-      console.log('inside');
+    let asyncValues: any = await HelperService.get('api/profile/profile-info');
+    console.log(asyncValues);
 
+    if (asyncValues && asyncValues.length != 0) {
       this.setState({
-        comapany: asyncValues
+        comapany: JSON.parse(asyncValues),
+        isLoading: false
+      })
+    }
+    else {
+      this.setState({
+        isLoading: false
       })
     }
 
@@ -42,67 +40,73 @@ export default class Dashboard extends Component<any> {
       <View style={{ flex: 1 }}>
         <View>
           <Appbar.Header>
-            <Appbar.Action
-              icon="menu"
-              onPress={() => {
-                Helper.openSidemenu(this.props.componentId, this.props.componentName);
-              }}
-            />
             <Appbar.Content title="Dashboard" />
-            <Appbar.Action icon={() => <Icon type="ionicon" name="ios-notifications" color="white" />} onPress={() => { }} />
             <Appbar.Action icon="dots-vertical" onPress={() => { }} />
           </Appbar.Header>
         </View>
-        <View style={{flex:1}}>
-          {this.state && this.state.comapany && this.state.comapany.id != 0 ?
+        <View style={{ flex: 1 }}>
+          {this.state && this.state.comapany && this.state.comapany.length != 0 ?
             <View style={{ margin: 10 }}>
-              <View style={{ margin: 10,display:'flex',alignItems:'center' }}>
-                <Avatar.Image size={150} style={{ backgroundColor: '#fff' }}
-                  source={this.state.comapany.logo ? { uri: this.state.comapany.logo } : require('../assets/image/images.png')} />
+              <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Headline>App List</Headline>
+                <Button mode="contained" onPress={() => {
+                  Helper.viewProfile(
+                    this.props
+                  );
+                }}>New App</Button>
               </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Company Name</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.title}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Description</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.description}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Founder</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.founder}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Employee Count</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.employeeCount}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Establish Year</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.establishYear}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.textStyle}>Headquater</Text>
-                <Text style={styles.textStyle}>{this.state.comapany.headQuater}</Text>
-              </View>
+              <FlatList
+                data={this.state.comapany}
+                renderItem={({ item, index }) => {
+                  return (
+                    <List.Item
+                      style={{ backgroundColor: '#dedede', borderRadius: 10, marginTop: 5 }}
+                      title={item.title}
+                      description={item.description + "\n" + "Author:" + item.author}
+                      onPress={()=>{
+                        Linking.openURL(item.link)
+                      }}
+                      descriptionNumberOfLines={2}
+                      left={props => <Avatar.Image size={50} style={{ backgroundColor: '#fff', marginTop: 10 }}
+                        source={item.logo ? { uri: item.logo } : require('../assets/image/images.png')} />}
+                      right={props => <Button style={{ marginTop: 15 }}
+                        onPress={() => {
+                          Helper.viewProfile(this.props, item)
+                        }}>
+                        Edit
+                      </Button>}
+                    />
+                  )
+                }}
+                keyExtractor={(item, index) => index.toString()}
+              />
+
             </View>
             :
-            <View style={{flex:1, display:'flex',alignItems:'center',justifyContent:'center',alignSelf:'center'}}>
-              <Text style={{ fontSize: 20,textAlign:'center' }}>Welcome to Dashboard</Text>
-              <View style={{ marginTop: 10 }}>
-            <Button
-              onPress={()=>{
-                Helper.viewProfile(
-                  this.props
-                );
-              }}
-              mode="contained"
-            >
-              <Text style={{ fontSize: 20 }}>Go to Profile</Text>
-            </Button>
-          </View>
+            <View style={{flex:1}}>
+              {this.state.isLoading ?
+                <View style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
+                  <ActivityIndicator size="large" animating={true} color={Colors.red800} />
+                </View>
+                :
+                <View style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
+                  <Text style={{ fontSize: 20, textAlign: 'center' }}>Welcome to Dashboard</Text>
+                  <View style={{ marginTop: 10 }}>
+                    <Button
+                      onPress={() => {
+                        Helper.viewProfile(
+                          this.props
+                        );
+                      }}
+                      mode="contained"
+                    >
+                      <Text style={{ fontSize: 20 }}>Add New App</Text>
+                    </Button>
+                  </View>
+                </View>
+              }
             </View>
           }
-
         </View>
       </View>
     )

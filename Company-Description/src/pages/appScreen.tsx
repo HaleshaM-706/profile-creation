@@ -1,17 +1,15 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet,Keyboard } from "react-native";
+import { View, Text, StyleSheet, Keyboard } from "react-native";
 import { Appbar, Avatar, Button, FAB } from "react-native-paper";
 import Helper from '../../provider/Helper'
 import HelperService from '../../provider/HelperService';
-import { Badge, Icon } from 'react-native-elements';
 import TextFields from "../components/fullBorderTextInput";
 import CustomTextArea from "../components/textInput";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-community/async-storage';
 import ImagePicker from "react-native-image-picker";
-import compress from 'compress-base64';
 
-export default class ProfileScreen extends Component {
+export default class AppstoreScreen extends Component<any> {
 
   constructor(props) {
     super(props)
@@ -20,10 +18,9 @@ export default class ProfileScreen extends Component {
   state = {
     title: '',
     description: '',
-    employeeCount: '',
-    establishYear: '',
-    founder: '',
-    headQuater: '',
+    appVersion: '',
+    author: '',
+    link: '',
     logo: '',
     id: 0
   }
@@ -31,40 +28,45 @@ export default class ProfileScreen extends Component {
 
 
   async componentDidMount() {
-    let asyncValues: any = await HelperService.getCurrentCompany();
-    if (asyncValues && asyncValues.id) {
-
+    if (this.props && this.props.id) {
       this.setState({
-        title: asyncValues.title,
-        description: asyncValues.description,
-        employeeCount: asyncValues.employeeCount.toString(),
-        establishYear: asyncValues.establishYear,
-        founder: asyncValues.founder,
-        headQuater: asyncValues.headQuater,
-        logo: asyncValues.logo,
-        id: asyncValues.id
+        title: this.props.title,
+        description: this.props.description,
+        appVersion: this.props.appVersion,
+        author: this.props.author,
+        link: this.props.link,
+        logo: this.props.logo,
+        id: this.props.id
       })
     }
 
   }
 
+  isValidate = () => {
+    if (this.state.title && this.state.appVersion && this.state.author &&
+      this.state.link && this.state.logo) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+
   submit = async () => {
-    if (this.state.title) {
+    if (this.isValidate()) {
       Keyboard.dismiss()
       let option = {
         title: this.state.title,
         description: this.state.description,
-        employeeCount: parseInt(this.state.employeeCount),
-        establishYear: this.state.establishYear,
-        founder: this.state.founder,
-        headQuater: this.state.headQuater,
+        appVersion: this.state.appVersion,
+        author: this.state.author,
+        link: this.state.link,
         logo: this.state.logo
       }
       if (this.state && this.state.id == 0) {
         let res: any = await HelperService.post('api/profile/details', JSON.stringify(option));
         console.log("Result res", res);
         if (res) {
-          let values = await AsyncStorage.setItem('CURRENT_COMPANY', res)
           HelperService.showToast('Successfully added comapany details')
           Helper.navigateToDashboard(this.props, "Dashboard");
         }
@@ -77,7 +79,6 @@ export default class ProfileScreen extends Component {
         console.log("Result res", res);
         let result: any = JSON.parse(res)
         if (result && result.message == "Profile was updated successfully.") {
-          let values = await AsyncStorage.setItem('CURRENT_COMPANY', JSON.stringify(this.state))
           HelperService.showToast('Successfully updated the comapany details')
           Helper.navigateToDashboard(this.props, "Dashboard");
         }
@@ -115,13 +116,7 @@ export default class ProfileScreen extends Component {
       <View style={{ flex: 1 }}>
         <View>
           <Appbar.Header>
-            <Appbar.Action
-              icon="menu"
-              onPress={() => {
-                Helper.openSidemenu(this.props.componentId, this.props.componentName);
-              }}
-            />
-            <Appbar.Content title="Profile" />
+            <Appbar.Content title="App Details" />
           </Appbar.Header>
         </View>
         <KeyboardAwareScrollView keyboardShouldPersistTaps='always' style={{ marginLeft: 10, marginRight: 10 }}>
@@ -130,7 +125,7 @@ export default class ProfileScreen extends Component {
               source={this.state.logo ? { uri: this.state.logo } : require('../assets/image/images.png')} />
             <FAB
               style={styles.fab}
-              icon={() => <Icon type="ionicon" name="create" color="white" />}
+              icon="plus"
               small
               onPress={() => {
                 this.pickImage();
@@ -145,65 +140,12 @@ export default class ProfileScreen extends Component {
               type="title"
               value={this.state.title}
               isBorder={true}
-              placeholder="Name of the Company"
-              textLabel="Title"
+              placeholder="Name of the App"
+              textLabel="Name of the App"
               isRequired={true}
             />
           </View>
-         
-          <View>
-            <TextFields
-              style={{ backgroundColor: "#fff" }}
-              onChangeText={this.onChangeText}
-              type="establishYear"
-              value={this.state.establishYear}
-              isBorder={true}
-              placeholder="Establish year"
-              textLabel="Establish year"
-              keyboardType={'numeric'}
-              isRequired={false}
-            />
-          </View>
 
-          <View>
-            <TextFields
-              style={{ backgroundColor: "#fff" }}
-              onChangeText={this.onChangeText}
-              type="employeeCount"
-              value={this.state.employeeCount}
-              isBorder={true}
-              placeholder="Employee Count"
-              textLabel="Employee Count"
-              keyboardType={'numeric'}
-              isRequired={false}
-            />
-          </View>
-
-          <View>
-            <TextFields
-              style={{ backgroundColor: "#fff" }}
-              onChangeText={this.onChangeText}
-              type="founder"
-              value={this.state.founder}
-              isBorder={true}
-              placeholder="Name of the Founder"
-              textLabel="Founder"
-              isRequired={false}
-            />
-          </View>
-
-          <View>
-            <TextFields
-              style={{ backgroundColor: "#fff" }}
-              onChangeText={this.onChangeText}
-              type="headQuater"
-              value={this.state.headQuater}
-              isBorder={true}
-              placeholder="Name of the Headquoter"
-              textLabel="Headquoter"
-              isRequired={false}
-            />
-          </View>
           <View>
             <Text>Description</Text>
             <View
@@ -226,18 +168,65 @@ export default class ProfileScreen extends Component {
             </View>
           </View>
 
-          <View style={{ marginTop: 10 }}>
+          <View>
+            <TextFields
+              style={{ backgroundColor: "#fff" }}
+              onChangeText={this.onChangeText}
+              type="appVersion"
+              value={this.state.appVersion}
+              isBorder={true}
+              placeholder="App version"
+              textLabel="App version"
+              isRequired={true}
+            />
+          </View>
+
+
+
+          <View>
+            <TextFields
+              style={{ backgroundColor: "#fff" }}
+              onChangeText={this.onChangeText}
+              type="link"
+              value={this.state.link}
+              isBorder={true}
+              placeholder="Link of your app"
+              textLabel="App Link"
+              isRequired={true}
+            />
+          </View>
+          <View>
+            <TextFields
+              style={{ backgroundColor: "#fff" }}
+              onChangeText={this.onChangeText}
+              type="author"
+              value={this.state.author}
+              isBorder={true}
+              placeholder="Name of the author"
+              textLabel="author"
+              isRequired={true}
+            />
+          </View>
+
+          <View style={{ margin: 10, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
             <Button
               onPress={this.submit}
               mode="contained"
+              disabled={!this.isValidate()}
             >
               <Text style={{ fontSize: 20 }}>{this.state.id != 0 ? 'Update' : 'Submit'}</Text>
             </Button>
+
+            <Button
+              onPress={() => {
+                Helper.navigateToDashboard(this.props, "Dashboard");
+              }}
+              mode="outlined"
+            >
+              <Text style={{ fontSize: 20 }}>Cancel</Text>
+            </Button>
           </View>
-
         </KeyboardAwareScrollView>
-
-
       </View>
     )
 

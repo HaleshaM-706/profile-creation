@@ -5,7 +5,8 @@ const Profile = db.profile;
 exports.create = (req, res) => {
   console.log('====>req',req.body);
   // Validate request
-  if (!req.body.title) {
+  if (!req.body.title||!req.body.appVersion
+    ||!req.body.author||!req.body.link||!req.body.logo) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
@@ -14,10 +15,9 @@ exports.create = (req, res) => {
   const ProfileInfo = new Profile({
     title: req.body.title,
     description: req.body.description,
-    employeeCount: req.body.employeeCount,
-    establishYear: req.body.establishYear,
-    founder: req.body.founder,
-    headQuater: req.body.headQuater,
+    appVersion: req.body.appVersion,
+    author: req.body.author,
+    link: req.body.link,
     logo:req.body.logo
   });
 
